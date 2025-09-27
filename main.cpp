@@ -19,6 +19,9 @@ int main() {
         write_file << input << endl;
         write_file.flush();
         if (input == "\\q") break;
+        if (input.find("echo ") == 0) {
+            cout << input.substr(5) << endl;
+        }
 
     }
     write_file.close();
