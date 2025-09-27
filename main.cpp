@@ -8,8 +8,12 @@ int main() {
     system("chcp 65001");
     string input;
     cout << "мой шелл :)" << endl;
-    cout << "₽ ";
-    getline(cin, input);
-
+    while (true){
+        cout << "₽ ";
+        if (!getline(cin, input)) {
+            break; // Ctrl+D
+        }
+        if (input.empty()) continue;
+    }
 
 }
