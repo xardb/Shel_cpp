@@ -14,6 +14,8 @@ int main() {
             break; // Ctrl+D
         }
         if (input.empty()) continue;
+        if (input == "\\q") break;
+
     }
 
 }
