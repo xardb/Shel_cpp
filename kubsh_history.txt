@@ -8,3 +8,9 @@ efsef
 5
 6
 echo 1232
+w
+w
+w
+w
+echo 123
+\q
