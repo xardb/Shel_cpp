@@ -3,8 +3,37 @@
 #include <fstream>
 #include <cstdlib> 
 #include <sstream>
-
+#include <vector> // чтоб хранить аргументы
+#include <unistd.h> //fork, exec,wait
+#include <sys/wait.h> // waitpid для ожидание смерти дочерних процессов
 using namespace std;
+
+
+// Эта функция мне нужна чтобы разбить введённую строку на аргументы
+vector<string> split_args(const string& input) {
+    vector<string> args;
+    string arg;
+    bool in_quotes = false;
+    
+    for (char c : input) {
+        if (c == '"') {
+            in_quotes = !in_quotes;
+        } else if (isspace(c) && !in_quotes) {
+            if (!arg.empty()) {
+                args.push_back(arg);
+                arg.clear();
+            }
+        } else {
+            arg += c;
+        }
+    }
+    
+    if (!arg.empty()) {
+        args.push_back(arg);
+    }
+    
+    return args;
+}
 
 int main() {
     // system("chcp 65001");
