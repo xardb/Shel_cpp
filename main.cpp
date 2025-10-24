@@ -83,9 +83,13 @@ int main() {
         if (input == "\\q") {
             break;
         }
+
+
         else if (input.find("echo ") == 0) {
             cout << input.substr(5) << endl;
         }
+
+
         else if (input.find("\\e ") == 0) {
             // Команда \e для вывода переменных окружения
             string var_name = input.substr(3);
@@ -94,8 +98,8 @@ int main() {
                 cout << "Неверная команда. Надо: \\e $VARNAME" << endl;
                 continue;
             }
-            string var_namewd = var_name.substr(1);
 
+            string var_namewd = var_name.substr(1);
             char* value = getenv(var_namewd.c_str());
             
             if (value != nullptr) {
@@ -115,22 +119,49 @@ int main() {
                 } else {
                     cout << env_value << endl;
                 }
-            } else {
-                vector<string> args = split_args(input);
-                if(args.empty()) continue;
-
-                string command_path = find_command_path(args[0]);
-                if(command_path.empty()){
-                    cout << "Команда " << args[0] << "'не найдена" << endl;
-                    continue;
-                }
-            }
+            } 
+            
         }
         else{
-            cout << "Неизвестная команда: " << input << endl;
-        }
+            // Если не q, не \e и не эхо, то считаем команду внешней
+            vector<string> args = split_args(input); //и разбиваем её на аргументы
+            if(args.empty()) continue;
 
+            //Ищем полный путь к команде ls = /bin/ls
+            string command_path = find_command_path(args[0]);
+
+            //не нашли команду - вывели ошибку и продолжили цикл
+            if(command_path.empty()){
+                cout << "Команда " << args[0] << " не найдена" << endl;
+                continue;
+            }
+
+            vector<char*> c_args; // хранятся указатели на аргументы в формате чар, требование execvp
+            vector<string> string_storage; //копия строк чтоб они не уничтожались до выполнения команды
+            for(auto arg:args){
+                string_storage.push_back(arg);
+                c_args.push_back(&string_storage.back()[0]); //указатель на первый символ
+            }
+            c_args.push_back(nullptr); //execvp хочет нульптр в конце
+            
+            pid_t pid = fork(); // Создали копию текущего процесса // 0 - мы в дочернем, > 0 в родительском, <0 ошибка 
+            if (pid == 0){
+                //Дочерний процесс
+                execvp(command_path.c_str(), c_args.data()); //заменяем нашу программу на целевую команду
+                // Если вернули управление - ошибка
+                cerr << "Ошибка выполнения: " << args[0] << endl;
+                exit(1); 
+            }
+            else if(pid >0 ){
+                int status;
+                waitpid(pid, &status, 0); // в родительском процессе ждем завершение дочернего, waitpid блокирует выполнение пока ребенок не помрет
+            }else{
+                cerr << "Ошибка при создании процесса";
+            }
+        }
+        
     }
     write_file.close();
     cout << "Выход" << endl;
+
 }
