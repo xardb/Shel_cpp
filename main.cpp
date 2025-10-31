@@ -68,10 +68,8 @@ int main() {
     string input;
     string history_file = "kubsh_history.txt";
     ofstream write_file(history_file, ios::app);
-    cout << "мой шелл :)" << endl;
-
     while (true){
-        cout << "₽ ";
+        // cout << "₽ ";
         if (!getline(cin, input)) {
             break; // Ctrl+D
         }
@@ -85,8 +83,16 @@ int main() {
         }
 
 
-        else if (input.find("echo ") == 0) {
-            cout << input.substr(5) << endl;
+        else if ((input.find("echo ") == 0) || input.find("debug ") == 0){
+            size_t pos = input.find(' ');
+            if(pos != string::npos){
+                string text = input.substr(pos+1);
+
+                if (text.size() >= 2 && text.front() == '\'' && text.back() == '\'') {
+                    text = text.substr(1, text.size() - 2);
+                }
+                cout << text << endl;
+            }
         }
 
 
@@ -132,7 +138,7 @@ int main() {
 
             //не нашли команду - вывели ошибку и продолжили цикл
             if(command_path.empty()){
-                cout << "Команда " << args[0] << " не найдена" << endl;
+                cout << args[0] << ": command not found" << endl;
                 continue;
             }
 
@@ -162,6 +168,4 @@ int main() {
         
     }
     write_file.close();
-    cout << "Выход" << endl;
-
 }
