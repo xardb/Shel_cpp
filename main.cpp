@@ -8,6 +8,10 @@
 #include <sys/wait.h> // waitpid для ожидание смерти дочерних процессов
 using namespace std;
 
+//обработчик сигнала
+void handle_sighup(int){
+    cout << "\nConfiguration reloaded" << endl;
+}
 
 // Эта функция мне нужна чтобы разбить введённую строку на аргументы
 vector<string> split_args(const string& input) {
@@ -64,12 +68,15 @@ string find_command_path(const string& command) {
 }
 
 int main() {
-    // system("chcp 65001");
+    signal(SIGHUP, handle_sighup);
+
+    
+
     string input;
     string history_file = "kubsh_history.txt";
     ofstream write_file(history_file, ios::app);
     while (true){
-        // cout << "₽ ";
+        cerr << "₽ " << flush;
         if (!getline(cin, input)) {
             break; // Ctrl+D
         }
