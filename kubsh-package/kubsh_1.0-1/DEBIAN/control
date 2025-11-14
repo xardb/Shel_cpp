@@ -1,8 +1,0 @@
-Package: kubsh
-Version: 1.0-1
-Section: utils
-Priority: optional
-Architecture: amd64
-Depends: libc6
-Maintainer: Владимир Дьяченко
-Description: Simple C++ shell
