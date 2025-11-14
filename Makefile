@@ -1,39 +1,46 @@
 # Компилятор и флаги
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -O2
-TARGET = kubsh
-PACKAGE_NAME = kubsh_1.0-1
-DEB_PACKAGE = $(PACKAGE_NAME).deb
+CXX := g++
+CXXFLAGS := -O2 -std=c++11
 
-# Исходные файлы
-SOURCES = main.cpp
-HEADERS = 
+# Имя программы
+TARGET := kubsh
 
-# Основная цель по умолчанию
+# Настройки пакета
+PACKAGE_NAME := $(TARGET)
+VERSION := 1.0
+ARCH := amd64
+DEB_FILENAME := kubsh.deb
+
+# Временные директории
+BUILD_DIR := deb_build
+INSTALL_DIR := $(BUILD_DIR)/usr/local/bin
+
+.PHONY: all clean deb
+
 all: $(TARGET)
 
-# Компиляция шелла
-$(TARGET): $(SOURCES) $(HEADERS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SOURCES)
+$(TARGET): Myshell.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
 
-# Сборка deb пакета
-deb: $(TARGET)
-	@echo "Сборка DEB пакета..."
-	./build-deb.sh
+deb: $(TARGET) | $(BUILD_DIR) $(INSTALL_DIR)
+	# Копируем бинарник
+	cp $(TARGET) $(INSTALL_DIR)/
+	
+	# Создаем базовую структуру пакета
+	mkdir -p $(BUILD_DIR)/DEBIAN
+	
+	# Генерируем контрольный файл
+	@echo "Package: $(PACKAGE_NAME)" > $(BUILD_DIR)/DEBIAN/control
+	@echo "Version: $(VERSION)" >> $(BUILD_DIR)/DEBIAN/control
+	@echo "Architecture: $(ARCH)" >> $(BUILD_DIR)/DEBIAN/control
+	@echo "Maintainer: $(USER)" >> $(BUILD_DIR)/DEBIAN/control
+	@echo "Description: Simple shell" >> $(BUILD_DIR)/DEBIAN/control
+	
+	# Собираем пакет с фиксированным именем
+	dpkg-deb --build $(BUILD_DIR) $(DEB_FILENAME)
 
-# Очистка
+$(BUILD_DIR) $(INSTALL_DIR):
+	mkdir -p $@
+
 clean:
-	rm -f $(TARGET)
-	rm -rf $(PACKAGE_NAME)
-	rm -f *.deb
-
-# Установка в систему
-install: $(TARGET)
-	cp $(TARGET) /usr/local/bin/
-
-# Запуск тестов
-test: $(TARGET)
-	@echo "Запуск тестов..."
-	docker run -v $(PWD)/$(TARGET):/usr/local/bin/$(TARGET) tyvik/kubsh_test:master
-
-.PHONY: all clean install deb test
+	rm -rf $(TARGET) $(BUILD_DIR) $(DEB_FILENAME)
