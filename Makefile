@@ -19,7 +19,7 @@ INSTALL_DIR := $(BUILD_DIR)/usr/local/bin
 
 all: $(TARGET)
 
-$(TARGET): Myshell.cpp
+$(TARGET): main.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 deb: $(TARGET) | $(BUILD_DIR) $(INSTALL_DIR)
