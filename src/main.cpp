@@ -19,6 +19,8 @@
 #include "builtin_commands.hpp"
 #include "history.hpp"
 #include "executor.hpp"
+#include "vfs_manager.hpp"
+#include "vfs.hpp"
 
 using namespace std;
 //обработчик сигнала
@@ -26,6 +28,11 @@ void handle_sighup(int){
     cout << "\nConfiguration reloaded" << endl;
 }
 int main() {
+    std::cout << std::unitbuf;
+    std::cerr << std::unitbuf;
+
+
+    fuse_start();
     signal(SIGHUP, handle_sighup);
     auto history = open_history();
 
