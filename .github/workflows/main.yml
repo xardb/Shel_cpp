@@ -1,4 +1,4 @@
-name: Build and Package kubsh.deb
+name: Build and Package kubsh_1.0.0_amd64.deb
 
 on:
   push:
@@ -41,5 +41,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: kubsh-package
-        path: kubsh.deb
+        path: kubsh_1.0.0_amd64.deb
         retention-days: 30
