@@ -1,4 +1,4 @@
-name: Build and Package kubsh_1.0.0_amd64.deb
+name: Build and Package kubsh
 
 on:
   push:
@@ -26,6 +26,11 @@ jobs:
         ghcr.io/xardb/kubshfuse:master \
         make deb
 
+    - name: Copy and rename package for tests
+      run: |
+        cp kubsh_1.0.0_amd64.deb kubsh.deb
+        ls -la *.deb
+
     - name: Run tests in container
       run: |
         docker run --rm \
@@ -35,22 +40,24 @@ jobs:
         --security-opt apparmor:unconfined \
         ghcr.io/xardb/kubshfuse:master
 
-    - name: Verify kubsh.deb exists
+    - name: Verify packages exist
       run: |
-        echo "Checking for kubsh.deb file..."
-        if [ -f "kubsh_1.0.0_amd64.deb" ]; then
-          echo "✅ kubsh.deb found!"
-          ls -la kubsh_1.0.0_amd64.deb
+        echo "Checking for package files..."
+        if [ -f "kubsh_1.0.0_amd64.deb" ] && [ -f "kubsh.deb" ]; then
+          echo "✅ Both package files found!"
+          ls -la *.deb
         else
-          echo "❌ kubsh.deb not found!"
+          echo "❌ Package files not found!"
           echo "Files in current directory:"
           ls -la
           exit 1
         fi
 
-    - name: Upload kubsh_1.0.0_amd64.deb as artifact
+    - name: Upload both packages as artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: kubsh-package
-        path: kubsh_1.0.0_amd64.deb
+        name: kubsh-packages
+        path: |
+          kubsh_1.0.0_amd64.deb
+          kubsh.deb
         retention-days: 30
