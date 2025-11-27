@@ -5,7 +5,6 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  # Можно добавить ручной запуск
   workflow_dispatch:
 
 jobs:
@@ -15,8 +14,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        repository: xardb/Shel_cpp
 
     - name: Pull Docker image
       run: docker pull ghcr.io/xardb/kubshfuse:master
@@ -28,16 +25,30 @@ jobs:
         -w /mnt \
         ghcr.io/xardb/kubshfuse:master \
         make deb
+
     - name: Run tests in container
       run: |
-          docker run --rm \
-          -v $PWD:/mnt \
-          --device /dev/fuse \
-          --cap-add SYS_ADMIN \
-          --security-opt apparmor:unconfined \
-          ghcr.io/xardb/kubshfuse:master
-  
-    - name: Upload kubsh.deb as artifact
+        docker run --rm \
+        -v $PWD:/mnt \
+        --device /dev/fuse \
+        --cap-add SYS_ADMIN \
+        --security-opt apparmor:unconfined \
+        ghcr.io/xardb/kubshfuse:master
+
+    - name: Verify kubsh.deb exists
+      run: |
+        echo "Checking for kubsh.deb file..."
+        if [ -f "kubsh_1.0.0_amd64.deb" ]; then
+          echo "✅ kubsh.deb found!"
+          ls -la kubsh_1.0.0_amd64.deb
+        else
+          echo "❌ kubsh.deb not found!"
+          echo "Files in current directory:"
+          ls -la
+          exit 1
+        fi
+
+    - name: Upload kubsh_1.0.0_amd64.deb as artifact
       uses: actions/upload-artifact@v4
       with:
         name: kubsh-package
