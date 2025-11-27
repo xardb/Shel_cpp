@@ -1,4 +1,2 @@
-*
-!Makefile
-!main.cpp
-!.gitignore
+/build/
+/.vscode/
