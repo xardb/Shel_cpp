@@ -1,0 +1,63 @@
+name: Build and Package kubsh
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Pull Docker image
+      run: docker pull ghcr.io/xardb/kubshfuse:master
+
+    - name: Build package in container
+      run: |
+        docker run --rm \
+        -v $PWD:/mnt \
+        -w /mnt \
+        ghcr.io/xardb/kubshfuse:master \
+        make deb
+
+    - name: Copy and rename package for tests
+      run: |
+        cp kubsh_1.0.0_amd64.deb kubsh.deb
+        ls -la *.deb
+
+    - name: Run tests in container
+      run: |
+        docker run --rm \
+        -v $PWD:/mnt \
+        --device /dev/fuse \
+        --cap-add SYS_ADMIN \
+        --security-opt apparmor:unconfined \
+        ghcr.io/xardb/kubshfuse:master
+
+    - name: Verify packages exist
+      run: |
+        echo "Checking for package files..."
+        if [ -f "kubsh_1.0.0_amd64.deb" ] && [ -f "kubsh.deb" ]; then
+          echo "✅ Both package files found!"
+          ls -la *.deb
+        else
+          echo "❌ Package files not found!"
+          echo "Files in current directory:"
+          ls -la
+          exit 1
+        fi
+
+    - name: Upload both packages as artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: kubsh-packages
+        path: |
+          kubsh_1.0.0_amd64.deb
+          kubsh.deb
+        retention-days: 30
