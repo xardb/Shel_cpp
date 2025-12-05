@@ -1,6 +1,6 @@
 # Компилятор и флаги
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wextra -Wno-missing-field-initializers
+CXXFLAGS = -std=c++17 -Wall -Wextra -Wno-missing-field-initializers
 FUSE_FLAGS = -I/usr/include/fuse3 -lfuse3 -L/usr/lib/x86_64-linux-gnu
 TARGET = kubsh
 

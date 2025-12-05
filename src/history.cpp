@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 using namespace std;
-
+//ПУНКТ 4
 ofstream open_history() {
     string path = string(getenv("HOME") ? getenv("HOME") : ".") + "/.kubsh_history";
     return ofstream(path, ios::app);
@@ -17,3 +17,5 @@ void append_history(ofstream& f, const string& line) {
     f << line << endl;
     f.flush();
 }
+
+

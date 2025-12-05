@@ -31,7 +31,7 @@ void* fuse_thread_function(void* arg) {
     //vfs_users -f -odefault_permissions -oauto_unmount /opt/users вот такую команду вводим
     //-f не даёт уйти в фон
     //default_permissions - ядро само проверяет unix права
-    //auto unmount - автоматическое отмонтирование при завершении(в этом была самая огромная проблема)
+    //auto unmount - автоматическое отмонтирование при завершении
     // /opt/users - хардкодим путь для тестов
     int fuse_argc = sizeof(fuse_argv) / sizeof(fuse_argv[0]);
 

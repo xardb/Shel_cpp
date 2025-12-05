@@ -23,6 +23,7 @@
 #include "vfs.hpp"
 
 using namespace std;
+
 //обработчик сигнала
 void handle_sighup(int){
     cout << "\nConfiguration reloaded" << endl;
@@ -38,8 +39,7 @@ int main() {
 
     string input;
     while (true) {
-        cerr << "₽ " << flush;
-        if (!getline(cin, input)) break;
+        if (!getline(cin, input)) break; // Пункт 2
         if (input.empty()) continue;
 
         append_history(history, input);
