@@ -39,6 +39,7 @@ int main() {
 
     string input;
     while (true) {
+        cerr << "$";
         if (!getline(cin, input)) break; // Пункт 2
         if (input.empty()) continue;
 

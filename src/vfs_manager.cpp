@@ -13,17 +13,18 @@ void* fuse_thread_function(void* arg) {
     init_users_operations();
 
 
-    //это необязательная штука, просто там какой то мусор при ручном запуске выводился, решили выпилить его на всякий
-    int devnull = open("/dev/null", O_WRONLY);
-    int olderr = dup(STDERR_FILENO);
-    dup2(devnull, STDERR_FILENO);
-    close(devnull);
+    // //это необязательная штука, просто там какой то мусор при ручном запуске выводился, решили выпилить его на всякий
+    // int devnull = open("/dev/null", O_WRONLY);
+    // int olderr = dup(STDERR_FILENO);
+    // dup2(devnull, STDERR_FILENO);
+    // close(devnull);
 
 
     // Аргументы для fuse_main
     const char* fuse_argv[] = {
         "vfs_users",
-        "-f",                      // foreground (требуется для корректной работы в потоке)
+        "-f", // foreground (требуется для корректной работы в потоке)
+        "-omax_idle_threads=10000",
         "-odefault_permissions",
         "-oauto_unmount",
         "/opt/users"               // точка монтирования
