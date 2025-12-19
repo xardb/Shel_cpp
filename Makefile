@@ -5,7 +5,7 @@ FUSE_FLAGS = -I/usr/include/fuse3 -lfuse3 -L/usr/lib/x86_64-linux-gnu
 TARGET = kubsh
 
 # Docker конфигурация
-IMAGE := ghcr.io/xardb/kubshfuse:master
+IMAGE := tyvik/kubsh_test:master
 DOCKER_FLAGS := --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined
 
 # Пакет
@@ -13,6 +13,7 @@ PACKAGE_NAME = kubsh
 BUILD_DIR = build
 DEB_DIR = $(BUILD_DIR)/$(PACKAGE_NAME)
 DEB_FILE := $(PACKAGE_NAME).deb
+
 
 # Исходные файлы
 SRCS = $(wildcard src/*.cpp)
@@ -31,6 +32,7 @@ $(TARGET): $(OBJS)
 deb: $(TARGET)
 	@echo "Создание deb-пакета..."
 	@mkdir -p $(DEB_DIR)/DEBIAN
+
 	@mkdir -p $(DEB_DIR)/usr/local/bin
 	@cp $(TARGET) $(DEB_DIR)/usr/local/bin/
 	@chmod +x $(DEB_DIR)/usr/local/bin/$(TARGET)
@@ -42,7 +44,7 @@ deb: $(TARGET)
 	@echo "Architecture: amd64" >> $(DEB_DIR)/DEBIAN/control
 	@echo "Maintainer: xardb" >> $(DEB_DIR)/DEBIAN/control
 	@echo "Description: Simple custom shell" >> $(DEB_DIR)/DEBIAN/control
-
+	@echo "Depends: fuse3, libfuse3-4, libreadline8" >> $(DEB_DIR)/DEBIAN/control
 	dpkg-deb --build $(DEB_DIR) $(DEB_FILE)
 	@echo "Пакет создан: $(DEB_FILE)"
 
